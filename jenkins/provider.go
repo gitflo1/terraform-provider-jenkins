@@ -39,10 +39,11 @@ func Provider() *schema.Provider {
 		},
 
 		DataSourcesMap: map[string]*schema.Resource{
-			"jenkins_credential_username":      dataSourceJenkinsCredentialUsername(),
-			"jenkins_credential_vault_approle": dataSourceJenkinsCredentialVaultAppRole(),
-			"jenkins_folder":                   dataSourceJenkinsFolder(),
-			"jenkins_job":                      dataSourceJenkinsJob(),
+			"jenkins_credential_username":                dataSourceJenkinsCredentialUsername(),
+			"jenkins_credential_vault_approle":           dataSourceJenkinsCredentialVaultAppRole(),
+			"jenkins_folder":                             dataSourceJenkinsFolder(),
+			"jenkins_job":                                dataSourceJenkinsJob(),
+			"jenkins_credential_azure_service_principal": dataSourceJenkinsCredentialAzureServicePrincipal(),
 		},
 
 		ResourcesMap: map[string]*schema.Resource{
