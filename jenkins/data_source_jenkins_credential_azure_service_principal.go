@@ -2,7 +2,9 @@ package jenkins
 
 import (
 	"context"
+	"strings"
 
+	"github.com/hashicorp/terraform-plugin-log/tflog"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/diag"
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/schema"
 )
@@ -67,6 +69,31 @@ func dataSourceJenkinsCredentialAzureServicePrincipalRead(ctx context.Context, d
 	name := d.Get("name").(string)
 	folderName := d.Get("folder").(string)
 	subid := d.Get("subscription_id").(string)
+	//domain := d.Get("domain").(string)
+
+	client := meta.(jenkinsClient)
+	cm := client.Credentials()
+	cred := AzureServicePrincipalCredentials{}
+	err := cm.GetSingle(
+		ctx,
+		d.Get("domain").(string),
+		d.Get("name").(string),
+		&cred,
+	)
+
+	tflog.Info(ctx, cred.Data.SubscriptionId)
+	tflog.Info(ctx, cred.Data.ClientId)
+	tflog.Info(ctx, cred.Data.Tenant)
+
+	if err != nil {
+		if strings.HasSuffix(err.Error(), "404") {
+			// Job does not exist
+			d.SetId("")
+			return nil
+		}
+
+		return diag.Errorf("Could not read Azure service principal credentials: %s", err)
+	}
 
 	d.SetId(formatFolderName(folderName + "/" + name))
 	d.Set("folder", folderName)
